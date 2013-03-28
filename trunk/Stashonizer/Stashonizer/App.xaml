@@ -1,0 +1,16 @@
+﻿<Application xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Stashonizer.Application"
+             xmlns:cal="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro" xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" x:Class="Stashonizer.App">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <local:AppBootstrapper x:Key="bootstrapper" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
+    </Application.Resources>
+</Application>
