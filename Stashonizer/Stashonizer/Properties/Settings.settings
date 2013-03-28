@@ -1,0 +1,36 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Stashonizer.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="MaxRounds" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="RoundInSeconds" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="PauseInSeconds" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="PlaySound" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="RoundTemplates" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DisplayBackgroundColor" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FFFFFF</Value>
+    </Setting>
+    <Setting Name="FontColor" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#000000</Value>
+    </Setting>
+    <Setting Name="DisplayBackgroundColorPause" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FFFFFF</Value>
+    </Setting>
+    <Setting Name="FontColorPause" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#000000</Value>
+    </Setting>
+    <Setting Name="SoundTemplates" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

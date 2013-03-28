@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<gems>
+  <gem name="Arc" type="Skill" color="Blue" />
+  <gem name="Incinerate" type="Skill" color="Blue" />
+  <gem name="Heavy Strike" type="Skill" color="Red" />
+  <gem name="Ground Slam" type="Skill" color="Red" />
+  <gem name="Decoy Totem" type="Skill" color="Red" />
+  <gem name="Conductivity" type="Skill" color="Blue" />
+  <gem name="Leap Slam" type="Skill" color="Red" />
+  <gem name="Faster Attacks" type="Support" color="Green" />
+  <gem name="Vitality" type="Skill" color="Red" />
+  <gem name="Item Quantity" type="Support" color="Red" />
+  <gem name="Lightning Strike" type="Skill" color="Red" />
+  <gem name="Minion Damage" type="Support" color="Blue" />
+  <gem name="Minion Life" type="Support" color="Blue" />
+  <gem name="Vulnerability" type="Skill" color="Blue" />
+  <gem name="Cold Penetration" type="Support" color="Green" />
+  <gem name="Pierce" type="Support" color="Green" />
+  <gem name="Mana Leech" type="Support" color="Green" />
+  <gem name="Determination" type="Skill" color="Red" />
+  <gem name="Hatred" type="Skill" color="Green" />
+  <gem name="Anger" type="Skill" color="Red" />
+  <gem name="Grace" type="Skill" color="Green" />
+  <gem name="Life Gain on Hit" type="Support" color="Red" />
+  <gem name="Cyclone" type="Skill" color="Green" />
+  <gem name="Discharge" type="Skill" color="Blue" />
+  <gem name="Fireball" type="Skill" color="Red" />
+  <gem name="Minion Speed" type="Support" color="Blue" />
+  <gem name="Frost Wall" type="Skill" color="Blue" />
+  <gem name="Arctic Armour" type="Skill" color="Green" />
+  <gem name="Shockwave Totem" type="Skill" color="Red" />
+  <gem name="Blood Rage" type="Skill" color="Green" />
+  <gem name="Burning Arrow" type="Skill" color="Green" />
+  <gem name="Enfeeble" type="Skill" color="Blue" />
+  <gem name="Iron Will" type="Support" color="Red" />
+  <gem name="Concentrated Effect" type="Support" color="Blue" />
+  <gem name="Whirling Blades" type="Skill" color="Green" />
+  <gem name="Shock Nova" type="Skill" color="Blue" />
+  <gem name="Faster Projectiles" type="Support" color="Green" />
+  <gem name="Arctic Breath" type="Skill" color="Blue" />
+  <gem name="Detonate Dead" type="Skill" color="Green" />
+  <gem name="Raise Spectre" type="Skill" color="Blue" />
+  <gem name="Chance to Ignite" type="Support" color="Blue" />
+  <gem name="Additional Accuracy" type="Support" color="Green" />
+  <gem name="Lightning Penetration" type="Support" color="Blue" />
+  <gem name="Tempest Shield" type="Skill" color="Blue" />
+  <gem name="Summon Skeletons" type="Skill" color="Blue" />
+  <gem name="Trap" type="Support" color="Green" />
+  <gem name="Stun" type="Support" color="Red" />
+  <gem name="Wrath" type="Skill" color="Blue" />
+  <gem name="Item Rarity" type="Support" color="Blue" />
+  <gem name="Ethereal Knives" type="Skill" color="Green" />
+  <gem name="Rejuvenation Totem" type="Skill" color="Red" />
+  <gem name="Added Cold Damage" type="Support" color="Green" />
+  <gem name="Remote Mine" type="Support" color="Blue" />
+  <gem name="Lightning Warp" type="Skill" color="Blue" />
+  <gem name="Punishment" type="Skill" color="Red" />
+  <gem name="Chance to Flee" type="Support" color="Green" />
+  <gem name="Point Blank" type="Support" color="Green" />
+  <gem name="Added Lightning Damage" type="Support" color="Blue" />
+  <gem name="Iron Grip" type="Support" color="Red" />
+  <gem name="Cold to Fire" type="Support" color="Red" />
+  <gem name="Ice Nova" type="Skill" color="Blue" />
+  <gem name="Fork" type="Support" color="Green" />
+  <gem name="Discipline" type="Skill" color="Blue" />
+  <gem name="Power Siphon" type="Skill" color="Blue" />
+  <gem name="Added Fire Damage" type="Support" color="Red" />
+  <gem name="Spell Totem" type="Support" color="Red" />
+  <gem name="Cleave" type="Skill" color="Red" />
+  <gem name="Fire Penetration" type="Support" color="Red" />
+  <gem name="Culling Strike" type="Support" color="Green" />
+  <gem name="Warlord's Mark" type="Skill" color="Red" />
+  <gem name="Rain of Arrows" type="Skill" color="Green" />
+  <gem name="Double Strike" type="Skill" color="Green" />
+  <gem name="Fire Trap" type="Skill" color="Green" />
+  <gem name="Critical Weakness" type="Skill" color="Blue" />
+  <gem name="Explosive Arrow" type="Skill" color="Green" />
+  <gem name="Cold Snap" type="Skill" color="Blue" />
+  <gem name="Frostbite" type="Skill" color="Blue" />
+  <gem name="Firestorm" type="Skill" color="Blue" />
+  <gem name="Frenzy" type="Skill" color="Green" />
+  <gem name="Split Arrow" type="Skill" color="Green" />
+  <gem name="Freeze Mine" type="Skill" color="Green" />
+  <gem name="Righteous Fire" type="Skill" color="Blue" />
+  <gem name="Dual Strike" type="Skill" color="Green" />
+  <gem name="Enduring Cry" type="Skill" color="Red" />
+  <gem name="Infernal Blow" type="Skill" color="Red" />
+  <gem name="Shield Charge" type="Skill" color="Red" />
+  <gem name="Freezing Pulse" type="Skill" color="Blue" />
+  <gem name="Projectile Weakness" type="Skill" color="Green" />
+  <gem name="Immortal Call" type="Skill" color="Red" />
+  <gem name="Dominating Blow" type="Skill" color="Red" />
+  <gem name="Viper Strike" type="Skill" color="Green" />
+  <gem name="Ice Spear" type="Skill" color="Blue" />
+  <gem name="Bear Trap" type="Skill" color="Green" />
+  <gem name="Spark" type="Skill" color="Blue" />
+  <gem name="Puncture" type="Skill" color="Green" />
+  <gem name="Elemental Weakness" type="Skill" color="Blue" />
+  <gem name="Poison Arrow" type="Skill" color="Green" />
+  <gem name="Conversion Trap" type="Skill" color="Blue" />
+  <gem name="Flicker Strike" type="Skill" color="Green" />
+  <gem name="Sweep" type="Skill" color="Red" />
+  <gem name="Ice Shot" type="Skill" color="Green" />
+  <gem name="Lightning Arrow" type="Skill" color="Green" />
+  <gem name="Glacial Hammer" type="Skill" color="Red" />
+</gems>
