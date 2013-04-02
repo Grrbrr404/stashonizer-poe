@@ -1,30 +1,79 @@
 ﻿<Window x:Class="Stashonizer.Presentation.Views.ShellView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:cal="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro" Title="Stashonizer" Height="400" Width="800"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:cal="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro" Title="Stashonizer" Height="338.5" Width="800"
         WindowStartupLocation="CenterScreen" >
     <Window.Resources>
 
     </Window.Resources>
-    <StackPanel>
-        <StackPanel>
-            <TabControl x:Name="StashTabs" ItemsSource="{Binding StashTabs}" >
+    <DockPanel Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="False">
+        <StackPanel DockPanel.Dock="Top">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock>Stash-Tabs</TextBlock>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Column="1">
+                    <ItemsControl ItemsSource="{Binding StashTabs}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"></StackPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding IsSelected}" Margin="2,2,2,0"/>
+                                    <TextBlock Text="{Binding Name}" Margin="0,2,2,2"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock>Characters</TextBlock>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Column="1">
+                    <ItemsControl ItemsSource="{Binding Characters}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"></StackPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding IsSelected}" Margin="2,2,2,0"/>
+                                    <TextBlock Text="{Binding Name}" Margin="0,2,2,2"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+
+            <!--<TabControl x:Name="StashTabs" ItemsSource="{Binding StashTabs}" >
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal" >
                             <CheckBox IsChecked="{Binding IsSelected}"/>
                             <TextBlock Text="{Binding Name}" />
                         </StackPanel>
-                    </DataTemplate>                    
+                    </DataTemplate>
 
                 </TabControl.ItemTemplate>
                 <TabControl.ContentTemplate>
                     <DataTemplate>
-                       
+
                     </DataTemplate>
                 </TabControl.ContentTemplate>
-            </TabControl>
+            </TabControl>-->
         </StackPanel>
-        <ListView Name="lstvwItems" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ItemsSource="{Binding StashItems}" Height="250">
+        <ListView DockPanel.Dock="Top" Name="lstvwItems" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ItemsSource="{Binding StashItems}" Height="250">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="200" Header="Name" DisplayMemberBinding="{Binding name}"/>
@@ -38,16 +87,16 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <DockPanel >
+        <DockPanel DockPanel.Dock="Top">
             <Button Margin="5,5,5,5" Width="80" cal:Message.Attach="LoadItems">Load Items</Button>
             <Button Margin="5,5,5,5" Width="150" cal:Message.Attach="CopyBBCodeToClipboard">Coppy BBCode to Clipboard</Button>
             <TextBlock DockPanel.Dock="Right" Margin="2,2,2,2" Text="{Binding StashItems.Count}"/>
-            <TextBlock TextAlignment="Right" Margin="2,2,2,2">Count: </TextBlock>
-            
+            <TextBlock TextAlignment="Right" Margin="2,2,2,2">Count:</TextBlock>
         </DockPanel>
-        <StackPanel>
-            <TextBox Text="{Binding UserEmail}" Width="150" HorizontalAlignment="Left" />
-            <TextBox Text="{Binding UserPassword}" Width="150" HorizontalAlignment="Left"  />
+        <StackPanel DockPanel.Dock="Bottom">
+            <StatusBar>
+                <TextBlock TextAlignment="Right" Text="{Binding StatusText}" Foreground="{Binding StatusTextColor}" />
+            </StatusBar>
         </StackPanel>
-    </StackPanel>
+    </DockPanel>
 </Window>

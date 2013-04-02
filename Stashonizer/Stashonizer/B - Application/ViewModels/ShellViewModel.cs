@@ -1,17 +1,12 @@
-﻿using System.Windows.Threading;
+﻿using System;
+using System.Windows.Media;
 
 namespace Stashonizer.Application.ViewModels {
     using System.ComponentModel.Composition;
     using System.Windows;
-    using System.Windows.Input;
-
     using Caliburn.Micro;
-
-    using Stashonizer.Properties;
-
-    using System.Net;
     using System.Collections.ObjectModel;
-    using Stashonizer.Domain;
+    using Domain;
     using System.Linq;
     using System.Text;
     using System.Collections.Generic;
@@ -19,16 +14,22 @@ namespace Stashonizer.Application.ViewModels {
     /// <summary>
     /// The shell view model.
     /// </summary>
-    [Export(typeof(IShell))]
+    [Export(typeof(IShellModel))]
     public class ShellViewModel : PropertyChangedBase {
 
         private ObservableCollection<PoeItem> _stashItems = new ObservableCollection<PoeItem>();
         private ObservableCollection<Tab> _stashTabs = new ObservableCollection<Tab>();
+        private ObservableCollection<CharacterInfo> _characters = new ObservableCollection<CharacterInfo>();
         private PoeWebQuery _queryEngine;
         private List<PoeItem> _tempItemList = new List<PoeItem>();
+        private ILoginView _view;
+        private IWindowManager _windowManager;
 
         public string UserEmail { get; set; }
         public string UserPassword { get; set; }
+
+        public string StatusText { get; set; }
+        public SolidColorBrush StatusTextColor { get; set; }
 
         public ObservableCollection<PoeItem> StashItems {
             get {
@@ -43,6 +44,12 @@ namespace Stashonizer.Application.ViewModels {
             }
         }
 
+        public ObservableCollection<CharacterInfo> Characters {
+            get {
+                return _characters;
+            }
+        }
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -50,20 +57,29 @@ namespace Stashonizer.Application.ViewModels {
         /// </summary>
         [ImportingConstructor]
         public ShellViewModel(IWindowManager windowManager) {
-            UserEmail = "User mail here";
-            UserPassword = "User PW here";
-            NotifyOfPropertyChange(() => UserEmail);
-            NotifyOfPropertyChange(() => UserPassword);
+            _windowManager = windowManager;
+            _queryEngine = new PoeWebQuery();
+            _queryEngine.NewData += QueryEngineNewData;
+            _queryEngine.WorkFinished += QueryEngineWorkFinished;
+            _queryEngine.ParsingError += QueryEngineOnParsingError;
+        }
+
+        private void QueryEngineOnParsingError() {
+            SetStatus("Internal Parsing Error", true);
         }
 
         public void LoadItems() {
+            if (!IsLoggedIn) {
+                IsLoggedIn = Login();
+                if (!IsLoggedIn) {
+                    SetStatus("Login failed", true);
+                    return;
+                }
 
-            if (_queryEngine == null) {
-                _queryEngine = new PoeWebQuery(UserEmail, UserPassword);
-                _queryEngine.NewStashData += queryEngine_NewStashData;
             }
 
             if (_stashTabs.Count == 0) {
+                SetStatus("Loading Stash-Layout...");
                 FullReload();
             }
             else {
@@ -73,46 +89,86 @@ namespace Stashonizer.Application.ViewModels {
             }
         }
 
-        private void queryEngine_NewStashData(RequestObject data) {
-            if (data.Response is PoeStash) {
-                var stash = (PoeStash)data.Response;
-
-                if (stash.items.Any()) {
-                    foreach (var item in stash.items) {
-                        if (!StashItems.Contains(item)) {
-                            Execute.OnUIThread(() => StashItems.Add(item));
-                        }
-                    }
-
-                    GemReference.Instance.SaveXml();
-                    StashItems = new ObservableCollection<PoeItem>(StashItems.ToList().OrderBy(i => i.name));
-                    NotifyOfPropertyChange(() => StashItems);
-                }
-
-                if (stash.tabs != null && stash.tabs.Any()) {
-                    Execute.OnUIThread(() => StashTabs.Clear());
-
-                    if (stash.tabs != null) {
-                        foreach (var tab in stash.tabs) {
-                            Execute.OnUIThread(() => _stashTabs.Add(tab));
-                        }
-                    }
-
-
-                    NotifyOfPropertyChange(() => StashTabs);
-                }
+        private bool Login() {
+            var login = new LoginViewModel();
+            var result = _windowManager.ShowDialog(login);
+            var loginResult = false;
+            if (result.HasValue && result.Value) {
+                loginResult = _queryEngine.Login(login.View.UserAccount, login.View.UserPassword);
+                login.View.UserPassword = string.Empty;
+                login.View.UserPassword = string.Empty;
             }
+
+            return loginResult;
+        }
+
+        private void SetStatus(string text, bool isError = false) {
+            StatusText = text;
+            StatusTextColor = isError ? Brushes.Red : Brushes.Black;
+
+            NotifyOfPropertyChange(() => StatusText);
+            NotifyOfPropertyChange(() => StatusTextColor);
+        }
+
+        private void QueryEngineNewData(RequestObject data) {
+            if (data.Response is PoeStash) {
+                HandleNewStashData(data);
+            }
+            else if (data.Response is IEnumerable<CharacterInfo>) {
+                HandleCharacterInfo(data);
+            }
+        }
+
+        private void HandleCharacterInfo(RequestObject data) {
+            var chars = data.Response as IEnumerable<CharacterInfo>;
+            foreach (var character in chars) {
+                Execute.OnUIThread(() => Characters.Add(character));
+            }
+
+            NotifyOfPropertyChange(() => Characters);
+        }
+
+        private void HandleNewStashData(RequestObject data) {
+            var stash = (PoeStash)data.Response;
+
+            if (stash.items.Any()) {
+                foreach (var item in stash.items) {
+                    if (!StashItems.Contains(item)) {
+                        Execute.OnUIThread(() => StashItems.Add(item));
+                    }
+                }
+
+                GemReference.Instance.SaveXml();
+                StashItems = new ObservableCollection<PoeItem>(StashItems.ToList().OrderBy(i => i.name));
+                NotifyOfPropertyChange(() => StashItems);
+            }
+
+            if (stash.tabs != null && stash.tabs.Any()) {
+                Execute.OnUIThread(() => StashTabs.Clear());
+
+                if (stash.tabs != null) {
+                    foreach (var tab in stash.tabs) {
+                        Execute.OnUIThread(() => _stashTabs.Add(tab));
+                    }
+                }
+
+
+                NotifyOfPropertyChange(() => StashTabs);
+            }
+        }
+
+        private void QueryEngineWorkFinished() {
+            SetStatus("Done");
         }
 
         private void FullReload() {
             _stashTabs.Clear();
             _stashItems.Clear();
+            _characters.Clear();
 
             _queryEngine.EnqueGetStashItems(0, true);
+            _queryEngine.EnqueGetCharacters();
             _queryEngine.Execute();
-
-            NotifyOfPropertyChange(() => StashItems);
-            NotifyOfPropertyChange(() => StashTabs);
         }
 
         public void CopyBBCodeToClipboard() {
@@ -213,6 +269,7 @@ namespace Stashonizer.Application.ViewModels {
 
 
             Clipboard.SetText(sb.ToString());
+            SetStatus("Item BBCode has been copied to your clipboard");
         }
 
         private string GetSpoiler(string description, IOrderedEnumerable<PoeItem> items) {
@@ -234,5 +291,9 @@ namespace Stashonizer.Application.ViewModels {
         }
 
         #endregion
+
+
+
+        public bool IsLoggedIn { get; set; }
     }
 }

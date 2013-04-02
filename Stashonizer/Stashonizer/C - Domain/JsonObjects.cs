@@ -1,12 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Stashonizer.Domain;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Stashonizer {
 
@@ -77,7 +74,7 @@ namespace Stashonizer {
             SetQuality();
             SetitemRarity();
             SetItemType();
-            
+
             SetMaxLink();
 
             if (string.IsNullOrEmpty(name)) {
@@ -151,7 +148,7 @@ namespace Stashonizer {
                     itemType = ItemType.Quiver;
                 }
                 else {
-                    itemType = ItemType.Unknown;    
+                    itemType = ItemType.Unknown;
                 }
             }
         }
@@ -178,10 +175,24 @@ namespace Stashonizer {
         public bool IsSelected { get; set; }
     }
 
-    public class PoeStash {
+    public class PoeStash : BaseQueryResult {
         public int numTabs { get; set; }
         public List<PoeItem> items { get; set; }
         public List<Tab> tabs { get; set; }
     }
 
+    public class CharacterInventory : BaseQueryResult {
+        public List<PoeItem> items { get; set; }
+        public CharacterInfo character { get; set; }
+    }
+
+    public class CharacterInfo : BaseQueryResult {
+        [JsonProperty(PropertyName = "name")]
+        public string Name { get; set; }
+        public string league { get; set; }
+        [JsonProperty(PropertyName = "class")]
+        public string charClass { get; set; }
+        public int classId { get; set; }
+        public int level { get; set; }
+    }
 }

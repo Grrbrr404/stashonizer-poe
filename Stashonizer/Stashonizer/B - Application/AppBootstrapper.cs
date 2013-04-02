@@ -12,7 +12,7 @@ namespace Stashonizer.Application
 
     using Stashonizer.Application.ViewModels;
 
-    public class AppBootstrapper : Bootstrapper<IShell>
+    public class AppBootstrapper : Bootstrapper<IShellModel>
     {
         private CompositionContainer container;
 
