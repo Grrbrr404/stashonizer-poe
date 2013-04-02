@@ -10,18 +10,16 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+namespace Stashonizer.Presentation.Views {
 
-namespace Stashonizer.Presentation.Views
-{
-  
 
-  /// <summary>
-  /// Interaktionslogik für ShellView.xaml
-  /// </summary>
-  
-  public partial class ShellView : Window {
-    public ShellView() {
-      InitializeComponent();
+    /// <summary>
+    /// Interaktionslogik für ShellView.xaml
+    /// </summary>
+
+    public partial class ShellView : Window {
+        public ShellView() {
+            InitializeComponent();
+        }
     }
-  }
 }

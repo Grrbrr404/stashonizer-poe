@@ -76,6 +76,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="A - Presentation\Converter\ZeroIntToSymbolConverter.cs" />
+    <Compile Include="A - Presentation\Views\LoginView.xaml.cs">
+      <DependentUpon>LoginView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="A - Presentation\Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
     </Compile>
@@ -83,6 +86,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="B - Application\ViewModels\IShellView.cs" />
+    <Compile Include="B - Application\ViewModels\LoginViewModel.cs" />
+    <Compile Include="C - Domain\BaseQueryResult.cs" />
     <Compile Include="C - Domain\CookieAwareWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -99,7 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="B - Application\AppBootstrapper.cs" />
-    <Compile Include="B - Application\ViewModels\IShell.cs" />
+    <Compile Include="B - Application\ViewModels\IShellModel.cs" />
     <Compile Include="B - Application\ViewModels\ShellViewModel.cs" />
     <Compile Include="F - Foundation\Threading\BackgroundAction.cs" />
     <Compile Include="F - Foundation\Threading\BackgroundProcess.cs" />
@@ -139,6 +145,10 @@
     <Folder Include="E - Technical Service\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="A - Presentation\Views\LoginView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="A - Presentation\Views\ShellView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

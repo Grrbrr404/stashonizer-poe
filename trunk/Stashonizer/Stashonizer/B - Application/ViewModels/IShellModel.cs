@@ -5,6 +5,6 @@ using System.Text;
 
 namespace Stashonizer.Application.ViewModels
 {
-  public interface IShell {
+  public interface IShellModel {
   }
 }
