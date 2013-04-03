@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace Stashonizer.Application.ViewModels {
@@ -15,7 +17,7 @@ namespace Stashonizer.Application.ViewModels {
     /// The shell view model.
     /// </summary>
     [Export(typeof(IShellModel))]
-    public class ShellViewModel : PropertyChangedBase {
+    public class ShellViewModel : Screen {
 
         private ObservableCollection<PoeItem> _stashItems = new ObservableCollection<PoeItem>();
         private ObservableCollection<Tab> _stashTabs = new ObservableCollection<Tab>();
@@ -50,6 +52,10 @@ namespace Stashonizer.Application.ViewModels {
             }
         }
 
+        public bool IsLoginRequired { get; set; }
+
+        public bool IsLoggedIn { get; set; }
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -62,6 +68,10 @@ namespace Stashonizer.Application.ViewModels {
             _queryEngine.NewData += QueryEngineNewData;
             _queryEngine.WorkFinished += QueryEngineWorkFinished;
             _queryEngine.ParsingError += QueryEngineOnParsingError;
+            IsLoginRequired = !_queryEngine.IsCacheEmpty();
+            if (!IsLoginRequired) {
+                LoadItems();
+            }
         }
 
         private void QueryEngineOnParsingError() {
@@ -69,13 +79,12 @@ namespace Stashonizer.Application.ViewModels {
         }
 
         public void LoadItems() {
-            if (!IsLoggedIn) {
+            if (!IsLoggedIn && IsLoginRequired) {
                 IsLoggedIn = Login();
                 if (!IsLoggedIn) {
                     SetStatus("Login failed", true);
                     return;
                 }
-
             }
 
             if (_stashTabs.Count == 0) {
@@ -85,8 +94,31 @@ namespace Stashonizer.Application.ViewModels {
             else {
                 StashItems.Clear();
                 _stashTabs.Where(tab => tab.IsSelected).ToList().ForEach(tab => _queryEngine.EnqueGetStashItems(tab.i));
+                _characters.Where(c => c.IsSelected).ToList().ForEach(c => _queryEngine.EnqueGetCharacterItems(c));
                 _queryEngine.Execute();
             }
+        }
+
+        public void SearchItems(object sender, RoutedEventArgs e) {
+
+            ICollectionView collectionView = CollectionViewSource.GetDefaultView(StashItems);
+            var searchPhrase = sender.ToString().ToUpper();
+
+            if (String.IsNullOrEmpty(searchPhrase))
+                collectionView.Filter = null;
+
+            else {
+                collectionView.Filter = o => {
+                    var item = (PoeItem)o;
+
+                    bool result =
+                        item.name.ToUpper().Contains(searchPhrase) ||
+                        item.itemType.ToString().ToUpper().Contains(searchPhrase);
+
+                    return result;
+                };
+            }
+
         }
 
         private bool Login() {
@@ -117,6 +149,33 @@ namespace Stashonizer.Application.ViewModels {
             else if (data.Response is IEnumerable<CharacterInfo>) {
                 HandleCharacterInfo(data);
             }
+            else if (data.Response is CharacterInventory) {
+                HandleCharacterInventory(data);
+            }
+        }
+
+        private void HandleCharacterInventory(RequestObject data) {
+            var inventory = (CharacterInventory)data.Response;
+
+            // Select only items that are in the inventory of the character, do not add equipped items
+            var mainInventoryItems = inventory.items.Where(item => item.inventoryId == "MainInventory").ToList();
+
+            if (mainInventoryItems.Any()) {
+                foreach (var item in mainInventoryItems) {
+                    AddItemToStash(item);
+                }
+                NotifyOfPropertyChange(() => StashItems);
+            }
+        }
+
+        /// <summary>
+        /// Thread Save add item to stashlist if not already exists
+        /// </summary>
+        /// <param name="item">the item</param>
+        private void AddItemToStash(PoeItem item) {
+            if (!StashItems.Contains(item)) {
+                Execute.OnUIThread(() => StashItems.Add(item));
+            }
         }
 
         private void HandleCharacterInfo(RequestObject data) {
@@ -128,20 +187,10 @@ namespace Stashonizer.Application.ViewModels {
             NotifyOfPropertyChange(() => Characters);
         }
 
+
+
         private void HandleNewStashData(RequestObject data) {
             var stash = (PoeStash)data.Response;
-
-            if (stash.items.Any()) {
-                foreach (var item in stash.items) {
-                    if (!StashItems.Contains(item)) {
-                        Execute.OnUIThread(() => StashItems.Add(item));
-                    }
-                }
-
-                GemReference.Instance.SaveXml();
-                StashItems = new ObservableCollection<PoeItem>(StashItems.ToList().OrderBy(i => i.name));
-                NotifyOfPropertyChange(() => StashItems);
-            }
 
             if (stash.tabs != null && stash.tabs.Any()) {
                 Execute.OnUIThread(() => StashTabs.Clear());
@@ -151,9 +200,16 @@ namespace Stashonizer.Application.ViewModels {
                         Execute.OnUIThread(() => _stashTabs.Add(tab));
                     }
                 }
-
-
                 NotifyOfPropertyChange(() => StashTabs);
+            }
+            else if (stash.items.Any()) {
+                foreach (var item in stash.items) {
+                    AddItemToStash(item);
+                }
+
+                GemReference.Instance.SaveXml();
+                StashItems = new ObservableCollection<PoeItem>(StashItems.ToList().OrderBy(i => i.name));
+                NotifyOfPropertyChange(() => StashItems);
             }
         }
 
@@ -290,10 +346,17 @@ namespace Stashonizer.Application.ViewModels {
             return string.Empty;
         }
 
+        protected override void OnDeactivate(bool close) {
+            if (close) {
+                _queryEngine.Dispose();
+            }
+            base.OnDeactivate(close);
+        }
+
         #endregion
 
 
 
-        public bool IsLoggedIn { get; set; }
+
     }
 }

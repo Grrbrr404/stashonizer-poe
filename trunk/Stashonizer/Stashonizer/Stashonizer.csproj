@@ -42,6 +42,10 @@
     <Reference Include="Caliburn.Micro">
       <HintPath>..\..\caliburnmicro\bin\WPF\Debug\Caliburn.Micro.dll</HintPath>
     </Reference>
+    <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F - Foundation\libs\Controls.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>F - Foundation\libs\Newtonsoft.Json.dll</HintPath>
@@ -49,6 +53,14 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.84.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F - Foundation\libs\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.84.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F - Foundation\libs\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -61,6 +73,10 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="UIControls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F - Foundation\libs\UIControls.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -97,6 +113,7 @@
     <Compile Include="C - Domain\JsonObjects.cs" />
     <Compile Include="C - Domain\PoeWebQuery.cs" />
     <Compile Include="C - Domain\Tools.cs" />
+    <Compile Include="E - Technical Service\GridViewSort.cs" />
     <Compile Include="Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -142,7 +159,6 @@
   <ItemGroup>
     <Folder Include="A - Presentation\Images\" />
     <Folder Include="D - Business Infrastructure\" />
-    <Folder Include="E - Technical Service\" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="A - Presentation\Views\LoginView.xaml">
@@ -160,10 +176,14 @@
     </None>
     <Resource Include="app.ico" />
     <Content Include="F - Foundation\libs\Caliburn.Micro.dll" />
+    <Content Include="F - Foundation\libs\Controls.dll" />
     <Content Include="F - Foundation\libs\Newtonsoft.Json.dll" />
     <Content Include="F - Foundation\libs\Newtonsoft.Json.pdb" />
     <Resource Include="F - Foundation\libs\Newtonsoft.Json.xml" />
+    <Content Include="F - Foundation\libs\System.Data.SQLite.dll" />
+    <Content Include="F - Foundation\libs\System.Data.SQLite.Linq.dll" />
     <Content Include="F - Foundation\libs\System.Windows.Interactivity.dll" />
+    <Content Include="F - Foundation\libs\UIControls.dll" />
     <Content Include="F - Foundation\libs\WPFToolkit.Extended.dll" />
     <Resource Include="F - Foundation\libs\System.Windows.Interactivity.xml" />
   </ItemGroup>
