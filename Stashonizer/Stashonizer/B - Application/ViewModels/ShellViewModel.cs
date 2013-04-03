@@ -72,6 +72,8 @@ namespace Stashonizer.Application.ViewModels {
             if (!IsLoginRequired) {
                 LoadItems();
             }
+
+            DisplayName = "Stashonizer";
         }
 
         private void QueryEngineOnParsingError() {

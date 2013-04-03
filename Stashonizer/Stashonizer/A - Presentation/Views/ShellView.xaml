@@ -5,8 +5,8 @@
         xmlns:uic="clr-namespace:UIControls;assembly=UIControls"
         xmlns:cc="clr-namespace:Controls;assembly=Controls"
         xmlns:ts="clr-namespace:Stashonizer.TechnicalService"
-        Title="Stashonizer" Height="397.5" Width="800"
-        WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" >
+        Title="Stashonizer" Height="404.962" Width="801.493"
+        WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight" >
     <Window.Resources>
         <Style x:Key="alternatingListViewItemStyle" TargetType="{x:Type ListViewItem}">
             <Style.Triggers>
@@ -102,7 +102,7 @@
             </ListView>
             <DockPanel DockPanel.Dock="Top">
                 <Button Margin="0,5,5,5" Width="80" cal:Message.Attach="LoadItems">Load Items</Button>
-                <Button Margin="0,5,5,5" Width="150" cal:Message.Attach="CopyBBCodeToClipboard">Coppy BBCode to Clipboard</Button>
+                <Button Margin="0,5,5,5" Width="160" cal:Message.Attach="CopyBBCodeToClipboard">Coppy BBCode to Clipboard</Button>
                 <TextBlock DockPanel.Dock="Right" Margin="2,2,2,2" >
                     <TextBlock.Text>
                         <MultiBinding StringFormat="{}{0} / {1}">
