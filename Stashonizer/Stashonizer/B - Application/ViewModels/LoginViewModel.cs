@@ -20,6 +20,7 @@ namespace Stashonizer.Application.ViewModels {
         private void OnViewAttached(object sender, ViewAttachedEventArgs viewAttachedEventArgs) {
             if (viewAttachedEventArgs.View is ILoginView) {
                 _view = (ILoginView)viewAttachedEventArgs.View;
+                
             }
         }
 

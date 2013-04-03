@@ -194,5 +194,7 @@ namespace Stashonizer {
         public string charClass { get; set; }
         public int classId { get; set; }
         public int level { get; set; }
+        [JsonIgnore]
+        public bool IsSelected { get; set; }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Data.SQLite;
+using System.IO;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,8 @@ namespace Stashonizer.Domain {
 
     public class PoeWebQuery : IDisposable {
 
+        private const string DB_FILE_NAME = "cache.sqlight";
+
         /// <summary>
         /// The client that is doing downloads for us
         /// </summary>
@@ -27,20 +31,25 @@ namespace Stashonizer.Domain {
         private BackgroundWorker _worker;
 
         /// <summary>
+        /// The db connection to cache requests / items
+        /// </summary>
+        private SQLiteConnection _dbConnection;
+
+        /// <summary>
         /// The request queue ... what to say here
         /// </summary>
         private Queue<RequestObject> _requestQueue;
 
         public delegate void NewDataHandler(RequestObject data);
-        
+
         /// <summary>
         /// Fired if new json data has arrived
         /// </summary>
         public event NewDataHandler NewData;
 
-        
+
         public delegate void OnWorkFinishedHandler();
-        
+
         /// <summary>
         /// Fired if the background worker has finished its work
         /// </summary>
@@ -77,6 +86,28 @@ namespace Stashonizer.Domain {
             _webClient.Encoding = Encoding.UTF8;
             _requestQueue = new Queue<RequestObject>();
             CreateWorker();
+            EstablishDbConnection();
+
+        }
+
+        private void EstablishDbConnection() {
+            CreateDbFileIfNotExists();
+            _dbConnection = new SQLiteConnection(string.Format("Data Source={0};Version=3;", DB_FILE_NAME));
+            _dbConnection.Open();
+            SetupSystemTables();
+        }
+
+        private void SetupSystemTables() {
+            using (var command = _dbConnection.CreateCommand()) {
+                command.CommandText = "CREATE TABLE IF NOT EXISTS Cache (date text, request varchar(250), responsedata text)";
+                command.ExecuteNonQuery();
+            }
+        }
+
+        private void CreateDbFileIfNotExists() {
+            if (!File.Exists(DB_FILE_NAME)) {
+                SQLiteConnection.CreateFile(DB_FILE_NAME);
+            }
         }
 
         /// <summary>
@@ -89,7 +120,7 @@ namespace Stashonizer.Domain {
             var urlLogin = "https://www.pathofexile.com/login";
             var data = string.Format("login_email={0}&login_password={1}", email, password);
             _webClient.UploadString(urlLogin, "POST", data);
-            
+
             // Client gets redirected to pathofexile.com/my-account after successful login
             return _webClient.ResponseUri.OriginalString.EndsWith("my-account");
         }
@@ -109,20 +140,35 @@ namespace Stashonizer.Domain {
         }
 
         private void WorkerOnDoWork(object sender, DoWorkEventArgs doWorkEventArgs) {
+            var throttleNextRequest = true;
             while (_requestQueue.Any()) {
                 var request = _requestQueue.Dequeue();
-                var data = _webClient.DownloadString(request.URL);
+
+                // Try to get data from cache
+                var data = GetDataFromCache(request.URL);
+
+                // No data found, downlaod it
+                if (string.IsNullOrEmpty(data)) {
+                    data = _webClient.DownloadString(request.URL);
+                    throttleNextRequest = true;
+                }
+                else {
+                    // not required if loaded from cache
+                    throttleNextRequest = false;
+                }
+
                 try {
                     if (request.ExpectedJsonResultType == typeof(CharacterInfo)) {
-                        request.Response = JsonConvert.DeserializeObject<List<CharacterInfo>>(data);    
+                        request.Response = JsonConvert.DeserializeObject<List<CharacterInfo>>(data);
                     }
                     else {
-                        request.Response = JsonConvert.DeserializeObject(data, request.ExpectedJsonResultType);    
+                        request.Response = JsonConvert.DeserializeObject(data, request.ExpectedJsonResultType);
                     }
-                    
+
+                    AddDataToCache(request.URL, data);
                     OnNewData(request);
-                    // Any more todo ? Throttle next request
-                    if (_requestQueue.Any()) {
+                    // Any more todo ? Throttle next request if required
+                    if (throttleNextRequest && _requestQueue.Any()) {
                         Thread.Sleep(2000);
                     }
                 }
@@ -132,12 +178,33 @@ namespace Stashonizer.Domain {
             }
         }
 
+        private void AddDataToCache(string requestUrl, string data) {
+            using (var command = _dbConnection.CreateCommand()) {
+                command.Parameters.Add(new SQLiteParameter("@ResponseData", data));
+                command.CommandText = string.Format(
+                    "INSERT INTO cache (date, request, responseData) VALUES ('{0}', '{1}', @ResponseData)",
+                    DateTime.Now.ToString("YYYY-MM-DD HH:MM:SS"),
+                    requestUrl,
+                    data);
+
+                command.ExecuteNonQuery();
+            }
+        }
+
+        private string GetDataFromCache(string requestUrl) {
+            using (var command = _dbConnection.CreateCommand()) {
+                command.CommandText = string.Format("SELECT responsedata FROM cache where request='{0}'", requestUrl);
+                var sqlResult = command.ExecuteScalar();
+                return sqlResult == null ? string.Empty : sqlResult.ToString();
+            }
+        }
+
         /// <summary>
         /// Adds a new request to request queue
         /// </summary>
         /// <typeparam name="T">Expected Result</typeparam>
         /// <param name="request"></param>
-        private void AddRequest<T>(string request) where T: BaseQueryResult {
+        private void AddRequest<T>(string request) where T : BaseQueryResult {
             var r = new RequestObject { URL = request, ExpectedJsonResultType = typeof(T) };
             _requestQueue.Enqueue(r);
         }
@@ -165,7 +232,16 @@ namespace Stashonizer.Domain {
         public void Dispose() {
             _webClient.Dispose();
             _worker.Dispose();
+            _dbConnection.Dispose();
             _requestQueue.Clear();
+        }
+
+        public bool IsCacheEmpty() {
+            using (var command = _dbConnection.CreateCommand()) {
+                command.CommandText = "Select count(*) from cache";
+                var dbResult =  command.ExecuteScalar().ToString();
+                return dbResult != "0";
+            }
         }
     }
 }
