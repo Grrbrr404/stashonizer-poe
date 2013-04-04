@@ -5,9 +5,10 @@ namespace Stashonizer {
     public class CookieAwareWebClient : WebClient {
         private Uri _responseUri;
         public Uri ResponseUri { get { return _responseUri; } }
-
+        
         public CookieAwareWebClient()
             : this(new CookieContainer()) { }
+
         public CookieAwareWebClient(CookieContainer c) {
             this.CookieContainer = c;
         }

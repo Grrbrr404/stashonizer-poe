@@ -1,8 +1,9 @@
 ﻿<Window x:Class="Stashonizer.Presentation.Views.LoginView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Login" Height="127" Width="288"
+        Title="Login" Height="127" Width="288" FocusManager.FocusedElement="{Binding ElementName=txtbxUserAccount}"
         xmlns:cal="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro" WindowStartupLocation="CenterOwner" SizeToContent="WidthAndHeight">
+    
     <Grid>
         <StackPanel>
             <StackPanel Orientation="Horizontal" Margin="5,5,5,0">

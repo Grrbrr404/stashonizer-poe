@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Navigation;
 
 namespace Stashonizer.Application.ViewModels {
     using System.ComponentModel.Composition;
@@ -12,6 +13,7 @@ namespace Stashonizer.Application.ViewModels {
     using System.Linq;
     using System.Text;
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     /// <summary>
     /// The shell view model.
@@ -22,9 +24,9 @@ namespace Stashonizer.Application.ViewModels {
         private ObservableCollection<PoeItem> _stashItems = new ObservableCollection<PoeItem>();
         private ObservableCollection<Tab> _stashTabs = new ObservableCollection<Tab>();
         private ObservableCollection<CharacterInfo> _characters = new ObservableCollection<CharacterInfo>();
+        private string _selectedLeague;
         private PoeWebQuery _queryEngine;
-        private List<PoeItem> _tempItemList = new List<PoeItem>();
-        private ILoginView _view;
+
         private IWindowManager _windowManager;
 
         public string UserEmail { get; set; }
@@ -32,6 +34,10 @@ namespace Stashonizer.Application.ViewModels {
 
         public string StatusText { get; set; }
         public SolidColorBrush StatusTextColor { get; set; }
+
+        public List<string> LeagueNames {
+            get { return new List<string> { "Hardcore", "Default" }; }
+        }
 
         public ObservableCollection<PoeItem> StashItems {
             get {
@@ -56,6 +62,21 @@ namespace Stashonizer.Application.ViewModels {
 
         public bool IsLoggedIn { get; set; }
 
+        public string SelectedLeague {
+            get {
+                return _selectedLeague;
+            }
+            set {
+                _selectedLeague = value;
+                if (_queryEngine != null) {
+                    _queryEngine.SetLeague(value);
+                    IsLoginRequired = !_queryEngine.IsCacheEmpty();
+                }
+                SetBasicLayoutFromCache();
+                NotifyOfPropertyChange(() => SelectedLeague);
+            }
+        }
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -64,41 +85,80 @@ namespace Stashonizer.Application.ViewModels {
         [ImportingConstructor]
         public ShellViewModel(IWindowManager windowManager) {
             _windowManager = windowManager;
+
+            DisplayName = "Stashonizer";
+            _selectedLeague = "Hardcore";
+
             _queryEngine = new PoeWebQuery();
             _queryEngine.NewData += QueryEngineNewData;
             _queryEngine.WorkFinished += QueryEngineWorkFinished;
             _queryEngine.ParsingError += QueryEngineOnParsingError;
-            IsLoginRequired = !_queryEngine.IsCacheEmpty();
-            if (!IsLoginRequired) {
-                LoadItems();
-            }
 
-            DisplayName = "Stashonizer";
+            IsLoginRequired = !_queryEngine.IsCacheEmpty();
+            SetBasicLayoutFromCache();
         }
+
+        #endregion
 
         private void QueryEngineOnParsingError() {
             SetStatus("Internal Parsing Error", true);
         }
 
         public void LoadItems() {
-            if (!IsLoggedIn && IsLoginRequired) {
-                IsLoggedIn = Login();
-                if (!IsLoggedIn) {
-                    SetStatus("Login failed", true);
-                    return;
-                }
-            }
-
             if (_stashTabs.Count == 0) {
                 SetStatus("Loading Stash-Layout...");
-                FullReload();
+                _stashItems.Clear();
+                _queryEngine.EnqueGetStashItems(0, true);
+                _queryEngine.EnqueGetCharacters();
             }
             else {
                 StashItems.Clear();
                 _stashTabs.Where(tab => tab.IsSelected).ToList().ForEach(tab => _queryEngine.EnqueGetStashItems(tab.i));
                 _characters.Where(c => c.IsSelected).ToList().ForEach(c => _queryEngine.EnqueGetCharacterItems(c));
-                _queryEngine.Execute();
             }
+
+            PerformRequests();
+        }
+
+        public void PerformRequests() {
+            if (!IsLoggedIn && _queryEngine.IsLoginRequiredForCurrentQueue()) {
+                IsLoggedIn = Login();
+                if (!IsLoggedIn) {
+                    SetStatus("Login failed", true);
+                    _queryEngine.EmptyQueue();
+                    return;
+                }
+            }
+            _queryEngine.Execute();
+        }
+
+        public void SetBasicLayoutFromCache() {
+            var stash = _queryEngine.GetStashFromCache();
+            IEnumerable<Tab> tabs = null;
+            tabs = stash == null ? new List<Tab>() : stash.tabs;
+            SetBasicTabLayout(tabs);
+            var chars = _queryEngine.GetCharactersFromCache();
+            SetBasicCharLayout(chars);
+        }
+
+        private void SetBasicTabLayout(IEnumerable<Tab> tabs) {
+            _stashTabs.Clear();
+
+            if (tabs != null && tabs.Any()) {
+                _stashTabs = new ObservableCollection<Tab>(tabs);
+            }
+
+            NotifyOfPropertyChange(() => StashTabs);
+        }
+
+        private void SetBasicCharLayout(IEnumerable<CharacterInfo> chars) {
+            _characters.Clear();
+
+            if (chars != null && chars.Any()) {
+                _characters = new ObservableCollection<CharacterInfo>(chars.Where(c => c.league.ToUpper() == SelectedLeague.ToUpper()).OrderBy(c => c.Name));
+            }
+
+            NotifyOfPropertyChange(() => Characters);
         }
 
         public void SearchItems(object sender, RoutedEventArgs e) {
@@ -182,27 +242,28 @@ namespace Stashonizer.Application.ViewModels {
 
         private void HandleCharacterInfo(RequestObject data) {
             var chars = data.Response as IEnumerable<CharacterInfo>;
-            foreach (var character in chars) {
-                Execute.OnUIThread(() => Characters.Add(character));
-            }
-
+            Execute.OnUIThread(() => SetBasicCharLayout(chars));
             NotifyOfPropertyChange(() => Characters);
         }
 
+        public void ClearCache() {
+            _queryEngine.ClearCache();
+            StashItems.Clear();
+            Characters.Clear();
+            StashTabs.Clear();
+            IsLoggedIn = false;
+            IsLoginRequired = true;
 
+            NotifyOfPropertyChange(() => StashItems);
+            NotifyOfPropertyChange(() => Characters);
+            NotifyOfPropertyChange(() => StashTabs);
+        }
 
         private void HandleNewStashData(RequestObject data) {
             var stash = (PoeStash)data.Response;
 
             if (stash.tabs != null && stash.tabs.Any()) {
-                Execute.OnUIThread(() => StashTabs.Clear());
-
-                if (stash.tabs != null) {
-                    foreach (var tab in stash.tabs) {
-                        Execute.OnUIThread(() => _stashTabs.Add(tab));
-                    }
-                }
-                NotifyOfPropertyChange(() => StashTabs);
+                Execute.OnUIThread(() => SetBasicTabLayout(stash.tabs));
             }
             else if (stash.items.Any()) {
                 foreach (var item in stash.items) {
@@ -219,19 +280,9 @@ namespace Stashonizer.Application.ViewModels {
             SetStatus("Done");
         }
 
-        private void FullReload() {
-            _stashTabs.Clear();
-            _stashItems.Clear();
-            _characters.Clear();
-
-            _queryEngine.EnqueGetStashItems(0, true);
-            _queryEngine.EnqueGetCharacters();
-            _queryEngine.Execute();
-        }
 
         public void CopyBBCodeToClipboard() {
             var sb = new StringBuilder();
-            ItemType lastType = ItemType.Unknown;
 
             var noUniqueItems = StashItems.Where(item => item.rarity != ItemRarity.Unique).ToList();
             var allUniques = StashItems.Where(item => item.rarity == ItemRarity.Unique).OrderBy(item => item.name);
@@ -355,10 +406,10 @@ namespace Stashonizer.Application.ViewModels {
             base.OnDeactivate(close);
         }
 
-        #endregion
 
-
-
-
+        public void BuyGrrbrrBeer() {
+            var url = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=E9LSRCHJBU7GW";
+            Process.Start(new ProcessStartInfo(url));
+        }
     }
 }
