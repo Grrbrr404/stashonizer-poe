@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel.Composition;
 using Caliburn.Micro;
 
 namespace Stashonizer.Application.ViewModels {
@@ -14,13 +10,14 @@ namespace Stashonizer.Application.ViewModels {
 
         [ImportingConstructor]
         public LoginViewModel() {
-            ViewAttached += OnViewAttached;    
+            ViewAttached += OnViewAttached;
+            DisplayName = "Login";
+            
         }
 
         private void OnViewAttached(object sender, ViewAttachedEventArgs viewAttachedEventArgs) {
             if (viewAttachedEventArgs.View is ILoginView) {
                 _view = (ILoginView)viewAttachedEventArgs.View;
-                
             }
         }
 
