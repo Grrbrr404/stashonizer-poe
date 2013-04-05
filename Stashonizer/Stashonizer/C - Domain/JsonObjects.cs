@@ -72,7 +72,7 @@ namespace Stashonizer {
         [OnDeserialized]
         public void OnSerializedMethod(StreamingContext context) {
             SetQuality();
-            SetitemRarity();
+            SetItemRarity();
             SetItemType();
 
             SetMaxLink();
@@ -88,10 +88,9 @@ namespace Stashonizer {
                 }
                 gemDefinition = GemReference.Instance.GemReferenceList[name];
             }
-
         }
 
-        private void SetitemRarity() {
+        private void SetItemRarity() {
             ItemRarity temp = ItemRarity.Undefined;
             ItemRarity.TryParse(frameType.ToString(), true, out temp);
             rarity = temp;
@@ -140,6 +139,9 @@ namespace Stashonizer {
             else {
                 if (rarity == ItemRarity.Gem) {
                     itemType = ItemType.Gem;
+                }
+                else if (rarity == ItemRarity.Currency) {
+                    itemType = ItemType.Currency;                   
                 }
                 else if (typeLine.Contains("Flask")) {
                     itemType = ItemType.Flask;
