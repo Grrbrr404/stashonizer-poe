@@ -102,7 +102,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="B - Application\ViewModels\IShellView.cs" />
+    <Compile Include="B - Application\ViewModels\ILoginView.cs" />
+    <Compile Include="B - Application\ViewModels\ItemPopupViewModel.cs" />
     <Compile Include="B - Application\ViewModels\LoginViewModel.cs" />
     <Compile Include="C - Domain\BaseQueryResult.cs" />
     <Compile Include="C - Domain\CookieAwareWebClient.cs">
@@ -145,6 +146,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Resource Include="A - Presentation\Fonts\Fontin-SmallCaps.ttf" />
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -157,10 +159,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="A - Presentation\Images\" />
     <Folder Include="D - Business Infrastructure\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="A - Presentation\Views\ItemPopupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="A - Presentation\Views\LoginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -175,6 +180,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Resource Include="app.ico" />
+    <Resource Include="A - Presentation\Images\header_currency.png" />
+    <Resource Include="A - Presentation\Images\header_currency_left.png" />
+    <Resource Include="A - Presentation\Images\header_currency_right.png" />
+    <Resource Include="A - Presentation\Images\header_unique.png" />
+    <Resource Include="A - Presentation\Images\header_unique_left.png" />
+    <Resource Include="A - Presentation\Images\header_unique_right.png" />
     <Content Include="F - Foundation\libs\Caliburn.Micro.dll" />
     <Content Include="F - Foundation\libs\Controls.dll" />
     <Content Include="F - Foundation\libs\Newtonsoft.Json.dll" />

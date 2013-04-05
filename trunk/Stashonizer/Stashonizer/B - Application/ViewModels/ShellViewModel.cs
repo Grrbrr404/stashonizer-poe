@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Dynamic;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Navigation;
@@ -14,6 +16,8 @@ namespace Stashonizer.Application.ViewModels {
     using System.Text;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Windows.Controls.Primitives;
+    using System.Windows.Input;
 
     /// <summary>
     /// The shell view model.
@@ -28,6 +32,7 @@ namespace Stashonizer.Application.ViewModels {
         private PoeWebQuery _queryEngine;
 
         private IWindowManager _windowManager;
+        private ItemPopupViewModel _itemPopup;
 
         public string UserEmail { get; set; }
         public string UserPassword { get; set; }
@@ -280,6 +285,28 @@ namespace Stashonizer.Application.ViewModels {
             SetStatus("Done");
         }
 
+
+        public void ShowItemPopup(object sender) {
+            if (_itemPopup == null) {
+                _itemPopup = new ItemPopupViewModel();
+            }
+            
+            dynamic settings = new ExpandoObject();
+            settings.Placement = PlacementMode.Top;
+            settings.PlacementTarget = sender;
+
+            
+            var stash = _queryEngine.GetStashFromCache();
+            _itemPopup.Item = stash.items[0];
+            _itemPopup.Item.rarity = ItemRarity.Unique;
+            // settings.HorizontalOffset = 100;
+            _windowManager.ShowPopup(_itemPopup, null, settings);
+        }
+
+        public void HideItemPopup() {
+           if (_itemPopup.IsActive)
+                _itemPopup.TryClose();
+        }
 
         public void CopyBBCodeToClipboard() {
             var sb = new StringBuilder();
