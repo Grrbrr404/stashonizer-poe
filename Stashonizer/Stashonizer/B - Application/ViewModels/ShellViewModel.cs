@@ -286,7 +286,7 @@ namespace Stashonizer.Application.ViewModels {
         }
 
 
-        public void ShowItemPopup(object sender) {
+        public void ShowItemPopup(PoeItem item, object sender) {
             if (_itemPopup == null) {
                 _itemPopup = new ItemPopupViewModel();
             }
@@ -294,12 +294,12 @@ namespace Stashonizer.Application.ViewModels {
             dynamic settings = new ExpandoObject();
             settings.Placement = PlacementMode.Top;
             settings.PlacementTarget = sender;
-
+            settings.VerticalOffset = ((FrameworkElement) sender).ActualHeight * -1;
             
             var stash = _queryEngine.GetStashFromCache();
-            _itemPopup.Item = stash.items[0];
-            _itemPopup.Item.rarity = ItemRarity.Unique;
-            // settings.HorizontalOffset = 100;
+            _itemPopup.Item = item;
+            _itemPopup.Item.rarity = ItemRarity.Currency;
+            
             _windowManager.ShowPopup(_itemPopup, null, settings);
         }
 

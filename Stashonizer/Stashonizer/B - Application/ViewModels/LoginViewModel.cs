@@ -12,7 +12,6 @@ namespace Stashonizer.Application.ViewModels {
         public LoginViewModel() {
             ViewAttached += OnViewAttached;
             DisplayName = "Login";
-            
         }
 
         private void OnViewAttached(object sender, ViewAttachedEventArgs viewAttachedEventArgs) {
