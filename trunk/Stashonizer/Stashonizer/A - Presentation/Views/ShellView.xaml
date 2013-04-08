@@ -96,7 +96,17 @@
                             <GridViewColumnHeader Content="Name" />
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <cc:HighlightTextBlock Text="{Binding name}" HighlightPhrase="{Binding ElementName=textBoxSearch, Path=Text}" HighlightBrush="Lime" />
+                                    <cc:HighlightTextBlock  cal:Message.Attach="[Event MouseEnter] = [Action ShowItemPopup($dataContext, $source)];[Event MouseLeave] = [Action HideItemPopup]" Text="{Binding name}" HighlightPhrase="{Binding ElementName=textBoxSearch, Path=Text}" HighlightBrush="Lime" >
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="TextDecorations" Value="Underline" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </cc:HighlightTextBlock>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -117,7 +127,7 @@
             <DockPanel Grid.Row="1">
                 <Button Margin="3,5,5,5" Width="80" cal:Message.Attach="LoadItems">Load Items</Button>
                 <Button Margin="0,5,5,5" Width="80" cal:Message.Attach="ClearCache">Clear Cache</Button>
-                <Button Margin="0,5,5,5" Width="160" cal:Message.Attach="[Event Click] = [Action CopyBBCodeToClipboard]; [Event MouseEnter] = [Action ShowItemPopup($source)];[Event MouseLeave] = [Action HideItemPopup]" >Coppy BBCode to Clipboard</Button>
+                <Button Margin="0,5,5,5" Width="160" cal:Message.Attach="[Event Click] = [Action CopyBBCodeToClipboard];" >Coppy BBCode to Clipboard</Button>
                 <TextBlock DockPanel.Dock="Right" Margin="2,2,2,2" >
                     <TextBlock.Text>
                         <MultiBinding StringFormat="{}{0} / {1}">
