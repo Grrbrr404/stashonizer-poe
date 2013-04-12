@@ -1,18 +1,44 @@
-﻿using System.Windows.Controls;
-using Caliburn.Micro;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
+using Caliburn.Micro;
+using System.ComponentModel.Composition;
 
 namespace Stashonizer.Application.ViewModels {
+
+    public class ItemTextElement {
+        public string Text { get; set; }
+        public SolidColorBrush Forecolor { get; set; }
+    }
+
+    public class ItemDisplayProperty {
+
+        List<ItemTextElement> Items { get; set; } 
+        
+        public ItemDisplayProperty() {
+            Items = new List<ItemTextElement>();
+            Items.Add(new ItemTextElement {Text = "Hallo", Forecolor = Brushes.Red});
+            Items.Add(new ItemTextElement { Text = "du", Forecolor = Brushes.Yellow });
+        }
+    }
+
     public class ItemPopupViewModel : Screen {
         private UserControl _view;
         private string _headerLeftSource;
         private string _headerRightSource;
         private string _headerSource;
         private string _topText;
+        private PoeItem _item;
+
+        private ObservableCollection<ItemDisplayProperty> _properties = new ObservableCollection<ItemDisplayProperty>();
+
+        public ObservableCollection<ItemDisplayProperty> ItemProperties {
+            get { return _properties; }
+        }
 
         public string HeaderLeftSource {
             get {
@@ -24,7 +50,11 @@ namespace Stashonizer.Application.ViewModels {
             }
         }
 
-        public PoeItem Item { get; set; }
+        public PoeItem Item {
+            get {
+                return _item;
+            }
+        }
 
         public string HeaderRightSource {
             get { return _headerRightSource; }
@@ -32,6 +62,16 @@ namespace Stashonizer.Application.ViewModels {
                 _headerRightSource = value;
                 NotifyOfPropertyChange(() => HeaderRightSource);
             }
+        }
+
+        /// <summary>
+        /// Sets the item for the popup
+        /// </summary>
+        /// <param name="item"></param>
+        public void SetItem(PoeItem item) {
+            _item = item;
+            _properties.Add(new ItemDisplayProperty());
+            Render();
         }
 
         public string HeaderSource {
@@ -52,14 +92,10 @@ namespace Stashonizer.Application.ViewModels {
             }
         }
 
+
         [ImportingConstructor]
         public ItemPopupViewModel() {
 
-        }
-
-        protected override void OnInitialize() {
-            base.OnInitialize();
-            Render();
         }
 
         internal double GetHeight() {
@@ -71,10 +107,45 @@ namespace Stashonizer.Application.ViewModels {
             base.OnViewAttached(view, context);
         }
 
-
         public void Render() {
             SetHeader(Item.rarity);
-            TopText = "Stack Size: 12/20";
+            
+            //BuildItemProperties();
+        }
+
+        private void BuildItemProperties() {
+            /*ItemProperties.Clear();
+            foreach (var property in Item.properties) {
+                if (property.name.Contains("%") && property.Values.Any()) {
+                    var textEle = new ItemTextElement();
+                    var parts = property.name.Split(new char[] {'%'});
+
+                    foreach (var part in parts) {
+                        if (Char.IsNumber(part[0])) {
+                            var index = int.Parse(part[0].ToString());
+                            ItemProperties.Add(GetTextElementForValue(property.Values[index]));
+                            ItemProperties.Add(GetTextElementForText(part.Substring(1)));
+                        }
+                        else {
+                            ItemProperties.Add(GetTextElementForText(part));
+                        }
+                    }
+                }
+
+                ItemProperties.Add(GetTextElementForText(Environment.NewLine));
+            }*/
+        }
+
+        private ItemTextElement GetTextElementForValue(PropertyValue property) {
+            var textEle = new ItemTextElement();
+            textEle.Text = property.Value + "&#xD;";
+            textEle.Forecolor = property.IsValueModifiedByAffix ? Brushes.DarkSlateBlue : Brushes.White;
+            return textEle;
+        }
+
+        private ItemTextElement GetTextElementForText(string text) {
+            var textEle = new ItemTextElement {Text = text, Forecolor = Brushes.Green};
+            return textEle;
         }
 
         private void SetHeader(ItemRarity itemRarity) {

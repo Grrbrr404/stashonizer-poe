@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Navigation;
+using Newtonsoft.Json;
 
 namespace Stashonizer.Application.ViewModels {
     using System.ComponentModel.Composition;
@@ -297,15 +298,20 @@ namespace Stashonizer.Application.ViewModels {
             settings.VerticalOffset = ((FrameworkElement) sender).ActualHeight * -1;
             
             var stash = _queryEngine.GetStashFromCache();
-            _itemPopup.Item = item;
-            _itemPopup.Item.rarity = ItemRarity.Currency;
-            
+            _itemPopup.SetItem(item);
+
+            CopyItemRaw(item);
             _windowManager.ShowPopup(_itemPopup, null, settings);
         }
 
         public void HideItemPopup() {
            if (_itemPopup.IsActive)
                 _itemPopup.TryClose();
+        }
+
+        public void CopyItemRaw(PoeItem item) {
+            var data = JsonConvert.SerializeObject(item);
+            Clipboard.SetText(data);
         }
 
         public void CopyBBCodeToClipboard() {
