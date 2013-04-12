@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Reflection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Stashonizer.Domain;
 using System.Collections.Generic;
@@ -9,14 +10,52 @@ namespace Stashonizer {
 
     public class Requirement {
         public string name { get; set; }
-        public List<List<object>> values { get; set; }
+        [JsonProperty(PropertyName = "values")]
+        public List<List<object>> rawValues { get; set; }
         public int displayMode { get; set; }
+
+        [JsonIgnore]
+        public bool IsValueModifiedByAffix { get; set; }
+
+        [JsonIgnore]
+        public string Value { get; set; }
+
+        [OnDeserialized]
+        public void OnSerializedMethod(StreamingContext context) {
+            if (rawValues != null && rawValues.Any()) {
+                Value = rawValues[0][0].ToString();
+                IsValueModifiedByAffix = rawValues[0][1].ToString() == "1";
+            }
+        }
     }
 
     public class Property {
         public string name { get; set; }
-        public List<object> values { get; set; }
+
+        [JsonProperty(PropertyName = "values")]
+        public List<object> rawValues { get; set; }
+
         public int displayMode { get; set; }
+
+        [JsonIgnore]
+        public List<PropertyValue> Values { get; set; }
+
+        [OnDeserialized]
+        public void OnSerializedMethod(StreamingContext context) {
+            if (rawValues != null && rawValues.Any()) {
+                Values = new List<PropertyValue>();
+                foreach (var rawValue in rawValues) {
+                    var str = rawValue.ToString();
+                    var jarray = JArray.Parse(str);
+                    Values.Add(new PropertyValue { Value = jarray[0].ToString(), IsValueModifiedByAffix = jarray[1].ToString() == "1" });
+                }
+            }
+        }
+    }
+
+    public class PropertyValue {
+        public string Value { get; set; }
+        public bool IsValueModifiedByAffix { get; set; }
     }
 
     public class AdditionalProperty {
@@ -120,7 +159,7 @@ namespace Stashonizer {
 
             foreach (var prop in properties) {
                 if (prop.name == "Quality") {
-                    var value = JArray.Parse(prop.values[0].ToString());
+                    var value = JArray.Parse(prop.rawValues[0].ToString());
                     quality = int.Parse(value[0].ToString().Replace("+", "").Replace("%", ""));
                 }
             }
@@ -141,7 +180,7 @@ namespace Stashonizer {
                     itemType = ItemType.Gem;
                 }
                 else if (rarity == ItemRarity.Currency) {
-                    itemType = ItemType.Currency;                   
+                    itemType = ItemType.Currency;
                 }
                 else if (typeLine.Contains("Flask")) {
                     itemType = ItemType.Flask;

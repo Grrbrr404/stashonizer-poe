@@ -64,7 +64,7 @@ namespace Stashonizer.Domain {
             var maximumRequirement = 0;
             foreach (var requirement in item.requirements) {
                 if (requirement.name == "Str" || requirement.name == "Dex" || requirement.name == "Int") {
-                    var requirementValue = int.Parse(requirement.values[0][0].ToString());
+                    var requirementValue = int.Parse(requirement.rawValues[0][0].ToString());
                     if (requirementValue > maximumRequirement) {
                         maximumRequirement = requirementValue;
                         attributeName = requirement.name;
@@ -106,7 +106,7 @@ namespace Stashonizer.Domain {
 
             foreach (var node in xmlDoc.DocumentElement.ChildNodes) {
                 var nodeElement = (XmlElement)node;
-                //<gem name="Arc" type="Skill" Color="Blue" />
+                //<gem name="Arc" type="Skill" Forecolor="Blue" />
                 var gemName = nodeElement.Attributes["name"].Value;
                 var gemType = (GemType)Enum.Parse(typeof(GemType), nodeElement.Attributes["type"].Value);
                 var gemColor = (GemColor)Enum.Parse(typeof(GemColor), nodeElement.Attributes["color"].Value);
