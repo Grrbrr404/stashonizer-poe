@@ -5,6 +5,7 @@ using Stashonizer.Domain;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System;
 
 namespace Stashonizer {
 
@@ -16,6 +17,9 @@ namespace Stashonizer {
 
         [JsonIgnore]
         public bool IsValueModifiedByAffix { get; set; }
+
+        [JsonIgnore]
+        public bool IsTextModifiedByAffix { get; set; }
 
         [JsonIgnore]
         public string Value { get; set; }
@@ -74,7 +78,9 @@ namespace Stashonizer {
             else {
                 DisplayText = name;
                 if (Values != null && Values.Any()) {
-                    DisplayText += ": ";
+                    if (!string.IsNullOrEmpty(DisplayText)) {
+                        DisplayText += ": ";
+                    }
                     DisplayValue = Values[0].Value;
                     IsValueModifiedByAffix = Values[0].IsValueModifiedByAffix;
                 }
@@ -120,6 +126,7 @@ namespace Stashonizer {
         public List<object> socketedItems { get; set; }
         public List<Property> properties { get; set; }
         public string descrText { get; set; }
+        public List<string> flavourText { get; set; }
         public List<AdditionalProperty> additionalProperties { get; set; }
         public string secDescrText { get; set; }
 
@@ -137,6 +144,9 @@ namespace Stashonizer {
         [JsonIgnore]
         public ItemRarity rarity { get; set; }
 
+        [JsonIgnore]
+        public string FlavourDisplayText { get; set; }
+
         [OnDeserialized]
         public void OnSerializedMethod(StreamingContext context) {
             SetQuality();
@@ -145,6 +155,7 @@ namespace Stashonizer {
 
             SetMaxLink();
             SetDisplayTextOfRequirements();
+            SetFlavourDisplayText();
             if (string.IsNullOrEmpty(name)) {
                 name = typeLine;
             }
@@ -158,12 +169,32 @@ namespace Stashonizer {
             }
         }
 
+        private void SetFlavourDisplayText() {
+            if (flavourText != null && flavourText.Any()) {
+                for (var i = 0; i < flavourText.Count; i++) {
+                    flavourText[i] = flavourText[i].Replace("\r", string.Empty);
+                }
+            }
+        }
+
         private void SetDisplayTextOfRequirements() {
             if (requirements != null && requirements.Any()) {
-                requirements.ForEach(r => r.DisplayText = ", " + r.name + " ");
-                var frist = requirements.First().DisplayText;
-                frist = frist.Substring(2);
-                requirements.First().DisplayText = frist;
+                foreach (var requirement in requirements) {
+                    if (requirement.displayMode == 1) {
+                        requirement.DisplayText = requirement.Value + " ";
+                        requirement.DisplayValue = requirement.name;
+                        requirement.IsTextModifiedByAffix = requirement.IsValueModifiedByAffix;
+                    }
+                    else {
+                        requirement.DisplayText = requirement.name + " ";
+                        requirement.DisplayValue = requirement.Value;
+
+                    }
+
+                    if (requirements.Last() != requirement) {
+                        requirement.DisplayValue += ", ";
+                    }
+                }
             }
         }
 

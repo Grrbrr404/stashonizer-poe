@@ -290,13 +290,11 @@ namespace Stashonizer.Application.ViewModels {
         public void ShowItemPopup(PoeItem item, object sender) {
 
             _itemPopup = new ItemPopupViewModel();
-            
-            
             dynamic settings = new ExpandoObject();
             settings.Placement = PlacementMode.Top;
             settings.PlacementTarget = sender;
             settings.VerticalOffset = ((FrameworkElement) sender).ActualHeight * -1;
-            
+            CopyItemRaw(item);
             _itemPopup.SetItem(item);
 
             _windowManager.ShowPopup(_itemPopup, null, settings);

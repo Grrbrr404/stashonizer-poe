@@ -91,6 +91,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="A - Presentation\Converter\CountToVisibilityConverter.cs" />
     <Compile Include="A - Presentation\Converter\ItemRarityToVisibilityConverter.cs" />
     <Compile Include="A - Presentation\Converter\ZeroIntToSymbolConverter.cs" />
     <Compile Include="A - Presentation\Views\LoginView.xaml.cs">
