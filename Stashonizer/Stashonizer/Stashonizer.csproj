@@ -105,6 +105,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="B - Application\ViewModels\ILoginView.cs" />
+    <Compile Include="B - Application\ViewModels\ItemGridViewModel.cs" />
     <Compile Include="B - Application\ViewModels\ItemPopupViewModel.cs" />
     <Compile Include="B - Application\ViewModels\LoginViewModel.cs" />
     <Compile Include="C - Domain\BaseQueryResult.cs" />

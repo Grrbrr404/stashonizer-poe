@@ -96,7 +96,7 @@
                             <GridViewColumnHeader Content="Name" />
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <cc:HighlightTextBlock  cal:Message.Attach="[Event MouseEnter] = [Action ShowItemPopup($dataContext, $source)];[Event MouseLeave] = [Action HideItemPopup];" Text="{Binding name}" HighlightPhrase="{Binding ElementName=textBoxSearch, Path=Text}" HighlightBrush="Lime" >
+                                    <cc:HighlightTextBlock  cal:Message.Attach="[Event MouseEnter] = [Action ShowItemPopup($dataContext, $source)];[Event MouseLeave] = [Action HideItemPopup];[Event MouseUp] = [Action ShowItem($dataContext)]" Text="{Binding name}" HighlightPhrase="{Binding ElementName=textBoxSearch, Path=Text}" HighlightBrush="Lime" >
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
                                                 <Style.Triggers>

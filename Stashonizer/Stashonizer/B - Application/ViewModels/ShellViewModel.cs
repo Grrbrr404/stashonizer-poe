@@ -313,6 +313,10 @@ namespace Stashonizer.Application.ViewModels {
             Clipboard.SetText(data);
         }
 
+        public void ShowItem(PoeItem item) {
+
+        }
+
         public void CopyBBCodeToClipboard() {
             var sb = new StringBuilder();
 
