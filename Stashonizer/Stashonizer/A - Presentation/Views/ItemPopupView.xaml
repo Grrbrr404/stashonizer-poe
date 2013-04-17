@@ -1,11 +1,24 @@
 ﻿<UserControl x:Class="Stashonizer.Presentation.Views.ItemPopupView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converter="clr-namespace:Stashonizer.Presentation.Converter"
              MinHeight="150" MinWidth="200">
     <UserControl.Resources>
-        <Style x:Key="myfont">
+        <Style x:Key="PoeFont">
             <Setter Property="TextElement.FontFamily" Value="/Stashonizer;component/A - Presentation/Fonts/#Fontin SmallCaps" />
+            <Setter Property="TextElement.FontSize" Value="12px" />
         </Style>
+        <Style TargetType="TextBlock" x:Key="ItemProperty" BasedOn="{StaticResource PoeFont}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsValueModifiedByAffix}" Value="True">
+                    <Setter Property="Foreground" Value="#8888FF"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsValueModifiedByAffix}" Value="False">
+                    <Setter Property="Foreground" Value="White"></Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <converter:ItemRarityToVisibilityConverter x:Key="RarityConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -18,7 +31,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*" MinWidth="200"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Image Source="{Binding HeaderLeftSource}" Stretch="Fill"/>
@@ -26,37 +39,60 @@
                 <DockPanel.Background>
                     <ImageBrush ImageSource="{Binding HeaderSource}" Viewport="0,0,1,1" ViewportUnits="RelativeToBoundingBox" />
                 </DockPanel.Background>
-                <StackPanel VerticalAlignment="Center" >
-                    <TextBlock TextAlignment="Center" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Foreground="#AA9E82" Style="{StaticResource myfont}" Text="{Binding Item.name}" FontSize="14px" />
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel VerticalAlignment="Center" Visibility="{Binding Item.rarity, Converter={StaticResource RarityConverter}, ConverterParameter=single}" >
+                        <TextBlock TextAlignment="Center" VerticalAlignment="Center" Foreground="{Binding HeaderForegroundColor}" Style="{StaticResource PoeFont}" Text="{Binding Item.name}" FontSize="14px" Margin="3, 3, 3, 0"/>
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Center" Visibility="{Binding Item.rarity, Converter={StaticResource RarityConverter}, ConverterParameter=double}">
+                        <TextBlock TextAlignment="Center" VerticalAlignment="Center" Foreground="{Binding HeaderForegroundColor}" Style="{StaticResource PoeFont}" Text="{Binding Item.name}" FontSize="14px" Margin="3, 3, 3, 0"/>
+                        <TextBlock TextAlignment="Center" VerticalAlignment="Center" Foreground="{Binding HeaderForegroundColor}" Style="{StaticResource PoeFont}" Text="{Binding Item.typeLine}" FontSize="14px" Margin="3, 3, 3, 0"/>
+                    </StackPanel>
                 </StackPanel>
             </DockPanel>
             <Image Source="{Binding HeaderRightSource}" Stretch="Fill" Grid.Column="3"/>
         </Grid>
         <StackPanel Grid.Row="1" Background="Black" Opacity="0.9">
-            <ItemsControl ItemsSource="{Binding ItemProperties}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ItemsControl ItemsSource="{Binding ItemProperties.Items}">
+            <StackPanel Margin="5,1,5,1">
+                <StackPanel>
+                    <ItemsControl ItemsSource="{Binding Item.properties}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding DisplayText}" Foreground="Thistle" Style="{StaticResource PoeFont}"/>
+                                    <TextBlock Text="{Binding DisplayValue}" Style="{StaticResource ItemProperty}" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Image Source="{Binding BlockSeperatorSource}" Stretch="Fill" Margin="0, 1.5, 0, 1.5"/>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <DockPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="Requires " Foreground="Thistle"></TextBlock>
+                        <ItemsControl ItemsSource="{Binding Item.requirements}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Vertical" />
+                                    <StackPanel Orientation="Horizontal" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="hallo" Foreground="{Binding Forecolor}"/>
+                                    <DockPanel HorizontalAlignment="Center">
+                                        <TextBlock Text="{Binding DisplayText}" Foreground="Thistle" Style="{StaticResource PoeFont}"/>
+                                        <TextBlock Text="{Binding Value}" Style="{StaticResource ItemProperty}" />
+                                    </DockPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <TextBlock Background="White" Width="Auto" Margin="20,0,20,0" Height="1.5" />
+                    </DockPanel>
+                    <Image Source="{Binding BlockSeperatorSource}" Stretch="Fill" Margin="0, 1.5, 0, 1.5"/>
+                </StackPanel>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>

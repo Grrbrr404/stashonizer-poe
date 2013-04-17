@@ -17,11 +17,11 @@ namespace Stashonizer.Application.ViewModels {
 
     public class ItemDisplayProperty {
 
-        List<ItemTextElement> Items { get; set; } 
-        
+        List<ItemTextElement> Items { get; set; }
+
         public ItemDisplayProperty() {
             Items = new List<ItemTextElement>();
-            Items.Add(new ItemTextElement {Text = "Hallo", Forecolor = Brushes.Red});
+            Items.Add(new ItemTextElement { Text = "Hallo", Forecolor = Brushes.Red });
             Items.Add(new ItemTextElement { Text = "du", Forecolor = Brushes.Yellow });
         }
     }
@@ -64,6 +64,8 @@ namespace Stashonizer.Application.ViewModels {
             }
         }
 
+        public SolidColorBrush HeaderForegroundColor { get; set; }
+
         /// <summary>
         /// Sets the item for the popup
         /// </summary>
@@ -82,6 +84,8 @@ namespace Stashonizer.Application.ViewModels {
             }
         }
 
+        public string BlockSeperatorSource { get; set; }
+
         public string TopText {
             get {
                 return _topText;
@@ -91,7 +95,6 @@ namespace Stashonizer.Application.ViewModels {
                 NotifyOfPropertyChange(() => TopText);
             }
         }
-
 
         [ImportingConstructor]
         public ItemPopupViewModel() {
@@ -109,8 +112,13 @@ namespace Stashonizer.Application.ViewModels {
 
         public void Render() {
             SetHeader(Item.rarity);
-            
+            SetSeparator(Item.rarity);
             //BuildItemProperties();
+        }
+
+        private void SetSeparator(ItemRarity itemRarity) {
+            var path = "/Stashonizer;component/A - Presentation/Images/separator_{0}.png";
+            BlockSeperatorSource = string.Format(path, itemRarity.ToString().ToLower()); 
         }
 
         private void BuildItemProperties() {
@@ -144,15 +152,46 @@ namespace Stashonizer.Application.ViewModels {
         }
 
         private ItemTextElement GetTextElementForText(string text) {
-            var textEle = new ItemTextElement {Text = text, Forecolor = Brushes.Green};
+            var textEle = new ItemTextElement { Text = text, Forecolor = Brushes.Green };
             return textEle;
         }
 
         private void SetHeader(ItemRarity itemRarity) {
-            string path = "/Stashonizer;component/A - Presentation/Images/header_{0}.png";
+            var path = "/Stashonizer;component/A - Presentation/Images/header_{0}.png";
             HeaderLeftSource = string.Format(path, itemRarity.ToString().ToLower() + "_left");
             HeaderRightSource = string.Format(path, itemRarity.ToString().ToLower() + "_right");
             HeaderSource = string.Format(path, itemRarity.ToString().ToLower());
+
+            var brushConverter = new BrushConverter();
+
+            switch (itemRarity) {
+                case ItemRarity.Normal:
+                    HeaderForegroundColor = (SolidColorBrush)brushConverter.ConvertFrom("#C8C8C8");
+                    break;
+                case ItemRarity.Blue:
+                    HeaderForegroundColor = (SolidColorBrush)brushConverter.ConvertFrom("#8888FF");
+                    break;
+                case ItemRarity.Rare:
+                    HeaderForegroundColor = (SolidColorBrush)brushConverter.ConvertFrom("#FFFF77");
+                    break;
+                case ItemRarity.Unique:
+                    HeaderForegroundColor = (SolidColorBrush)brushConverter.ConvertFrom("#AF6025");
+                    break;
+                case ItemRarity.Gem:
+                    HeaderForegroundColor = (SolidColorBrush)brushConverter.ConvertFrom("#1BA29B");
+                    break;
+                case ItemRarity.Currency:
+                    HeaderForegroundColor = (SolidColorBrush)brushConverter.ConvertFrom("#AA9E82");
+                    break;
+                case ItemRarity.Quest:
+                    HeaderForegroundColor = Brushes.YellowGreen;
+                    break;
+                case ItemRarity.Undefined:
+                    HeaderForegroundColor = (SolidColorBrush)brushConverter.ConvertFrom("#AA9E82");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("itemRarity");
+            }
         }
     }
 }

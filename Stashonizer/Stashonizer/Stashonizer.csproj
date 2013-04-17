@@ -91,6 +91,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="A - Presentation\Converter\ItemRarityToVisibilityConverter.cs" />
     <Compile Include="A - Presentation\Converter\ZeroIntToSymbolConverter.cs" />
     <Compile Include="A - Presentation\Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
@@ -186,6 +187,24 @@
     <Resource Include="A - Presentation\Images\header_unique.png" />
     <Resource Include="A - Presentation\Images\header_unique_left.png" />
     <Resource Include="A - Presentation\Images\header_unique_right.png" />
+    <Resource Include="A - Presentation\Images\header_blue.png" />
+    <Resource Include="A - Presentation\Images\header_blue_left.png" />
+    <Resource Include="A - Presentation\Images\header_blue_right.png" />
+    <Resource Include="A - Presentation\Images\header_rare.png" />
+    <Resource Include="A - Presentation\Images\header_rare_left.png" />
+    <Resource Include="A - Presentation\Images\header_rare_right.png" />
+    <Resource Include="A - Presentation\Images\header_gem.png" />
+    <Resource Include="A - Presentation\Images\header_gem_left.png" />
+    <Resource Include="A - Presentation\Images\header_gem_right.png" />
+    <Resource Include="A - Presentation\Images\header_normal.png" />
+    <Resource Include="A - Presentation\Images\header_normal_left.png" />
+    <Resource Include="A - Presentation\Images\header_normal_right.png" />
+    <Resource Include="A - Presentation\Images\separator_blue.png" />
+    <Resource Include="A - Presentation\Images\separator_currency.png" />
+    <Resource Include="A - Presentation\Images\separator_gem.png" />
+    <Resource Include="A - Presentation\Images\separator_normal.png" />
+    <Resource Include="A - Presentation\Images\separator_rare.png" />
+    <Resource Include="A - Presentation\Images\separator_unique.png" />
     <Content Include="F - Foundation\libs\Caliburn.Micro.dll" />
     <Content Include="F - Foundation\libs\Controls.dll" />
     <Content Include="F - Foundation\libs\Newtonsoft.Json.dll" />

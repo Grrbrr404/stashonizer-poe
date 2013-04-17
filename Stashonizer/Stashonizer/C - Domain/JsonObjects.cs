@@ -20,6 +20,12 @@ namespace Stashonizer {
         [JsonIgnore]
         public string Value { get; set; }
 
+        [JsonIgnore]
+        public string DisplayText { get; set; }
+
+        [JsonIgnore]
+        public string DisplayValue { get; set; }
+
         [OnDeserialized]
         public void OnSerializedMethod(StreamingContext context) {
             if (rawValues != null && rawValues.Any()) {
@@ -40,6 +46,15 @@ namespace Stashonizer {
         [JsonIgnore]
         public List<PropertyValue> Values { get; set; }
 
+        [JsonIgnore]
+        public string DisplayText { get; set; }
+
+        [JsonIgnore]
+        public string DisplayValue { get; set; }
+
+        [JsonIgnore]
+        public bool IsValueModifiedByAffix { get; set; }
+
         [OnDeserialized]
         public void OnSerializedMethod(StreamingContext context) {
             if (rawValues != null && rawValues.Any()) {
@@ -48,6 +63,20 @@ namespace Stashonizer {
                     var str = rawValue.ToString();
                     var jarray = JArray.Parse(str);
                     Values.Add(new PropertyValue { Value = jarray[0].ToString(), IsValueModifiedByAffix = jarray[1].ToString() == "1" });
+                }
+            }
+            if (name.Contains("%")) {
+                DisplayText = name;
+                for (var i = 0; i < Values.Count; i++) {
+                    DisplayText = DisplayText.Replace("%" + (i).ToString(), Values[i].Value);
+                }
+            }
+            else {
+                DisplayText = name;
+                if (Values != null && Values.Any()) {
+                    DisplayText += ": ";
+                    DisplayValue = Values[0].Value;
+                    IsValueModifiedByAffix = Values[0].IsValueModifiedByAffix;
                 }
             }
         }
@@ -115,7 +144,7 @@ namespace Stashonizer {
             SetItemType();
 
             SetMaxLink();
-
+            SetDisplayTextOfRequirements();
             if (string.IsNullOrEmpty(name)) {
                 name = typeLine;
             }
@@ -126,6 +155,15 @@ namespace Stashonizer {
                     GemReference.Instance.GemReferenceList.Add(name, gemDef);
                 }
                 gemDefinition = GemReference.Instance.GemReferenceList[name];
+            }
+        }
+
+        private void SetDisplayTextOfRequirements() {
+            if (requirements != null && requirements.Any()) {
+                requirements.ForEach(r => r.DisplayText = ", " + r.name + " ");
+                var frist = requirements.First().DisplayText;
+                frist = frist.Substring(2);
+                requirements.First().DisplayText = frist;
             }
         }
 
