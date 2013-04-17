@@ -288,25 +288,26 @@ namespace Stashonizer.Application.ViewModels {
 
 
         public void ShowItemPopup(PoeItem item, object sender) {
-            if (_itemPopup == null) {
-                _itemPopup = new ItemPopupViewModel();
-            }
+
+            _itemPopup = new ItemPopupViewModel();
+            
             
             dynamic settings = new ExpandoObject();
             settings.Placement = PlacementMode.Top;
             settings.PlacementTarget = sender;
             settings.VerticalOffset = ((FrameworkElement) sender).ActualHeight * -1;
             
-            var stash = _queryEngine.GetStashFromCache();
             _itemPopup.SetItem(item);
 
-            CopyItemRaw(item);
             _windowManager.ShowPopup(_itemPopup, null, settings);
         }
 
         public void HideItemPopup() {
-           if (_itemPopup.IsActive)
-                _itemPopup.TryClose();
+            try {
+                if (_itemPopup.IsActive)
+                    _itemPopup.TryClose();
+            }
+            catch {}
         }
 
         public void CopyItemRaw(PoeItem item) {
