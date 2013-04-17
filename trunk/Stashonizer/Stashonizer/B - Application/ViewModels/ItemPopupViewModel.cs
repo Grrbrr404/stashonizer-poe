@@ -54,6 +54,10 @@ namespace Stashonizer.Application.ViewModels {
             get {
                 return _item;
             }
+            set
+            {
+                _item = value;
+            }
         }
 
         public string HeaderRightSource {
